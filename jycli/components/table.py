@@ -261,13 +261,13 @@ class Table(Renderable):
         html = ['<table cellpadding="0" cellspacing="0" align="center" border="1">']
 
         # Table name
-        html.append("<caption>%s</caption>" % self.name)
+        html.append("<caption>%s</caption>" % self._html_escape_string(self.name))
         
         # Header
         html.append("<thead>")
         html.append("<tr>")
         for column in self.columns:
-            html.append("<th>%s</th>" % column)
+            html.append("<th>%s</th>" % self._html_escape_string(column))
         html.append("</tr>")
         html.append("</thead>")
 
@@ -276,7 +276,7 @@ class Table(Renderable):
         for row in self.rows:
             html.append("<tr>")
             for column in row:
-                html.append("<td>%s</td>" % column)
+                html.append("<td>%s</td>" % self._html_escape_string(column))
             html.append("</tr>")
         html.append("</tbody>")
 
@@ -355,3 +355,4 @@ if __name__ == "__main__":
     table.add_row("Value4", "Value5", "Value6")
     table.add_row("Value7", "Value8\nNew line", "Value9")
     print(table.render(max_width=80))
+    print(table.to_html())

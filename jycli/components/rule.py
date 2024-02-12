@@ -109,7 +109,7 @@ class Rule(Renderable):
                     <td width="1px" style="padding: 0 10px; white-space: nowrap;">%s</td>
                     <td><hr /></td>
                 </table>
-            """ % self.title
+            """ % self._html_escape_string(self.title)
 
         return html
 
