@@ -2,7 +2,7 @@ from __future__ import nested_scopes
 
 from polyfills.stdlib.future_types.bool import *  # type: ignore # ==> Import the polyfills for boolean types
 from jycli.console import Console
-from jycli._renderables import Renderable
+from jycli.components._renderables import Renderable
 from jycli.style import parse as parse_style
 
 
