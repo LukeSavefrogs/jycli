@@ -4,6 +4,7 @@ import sys as _sys
 from polyfills.stdlib.functions import sum
 from polyfills.itertools import batched
 from jycli.console import Console
+from jycli.components._renderables import Renderable
 
 __all__ = ["Table"]
 
@@ -34,7 +35,7 @@ else:
     return x
 
 
-class Table:
+class Table(Renderable):
     """ A table that can be rendered in the console or as HTML. """
     def __init__(self, name, columns):
         """ Creates a new table.
