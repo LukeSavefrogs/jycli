@@ -273,7 +273,7 @@ class Application:
         # Start the timer
         self._start_time = _time.time()
 
-        self.console.print("\n\n", self.divider, "\n\n")
+        self.console.print("\n\n", self.divider, "\n\n", sep="")
         _sys.setprofile(_tracer)    # The tracer is activated on next call, return or exception
         try:
             try:
@@ -298,7 +298,7 @@ class Application:
                 self._raised = True
         finally:
             _sys.setprofile(None)   # Make sure to always remove the tracer
-        self.console.print("\n\n", self.divider, "\n\n")
+        self.console.print("\n\n", self.divider, "\n\n", sep="")
 
         # Stop the timer
         self._end_time = _time.time()
