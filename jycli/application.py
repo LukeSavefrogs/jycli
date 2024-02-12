@@ -28,12 +28,12 @@ from __future__ import nested_scopes
 import sys as _sys
 import time as _time
 import traceback
-from jycli.rule import Rule
+from jycli.components.rule import Rule
 
 from polyfills.stdlib.future_types.bool import * # type: ignore # ==> Import the polyfills for boolean types
 
 from jycli.console import Console
-from jycli.panel import Panel
+from jycli.components.panel import Panel
 
 __all__ = ["Application", "ApplicationContext"]
 

@@ -88,7 +88,7 @@ The `table` module exposes the `Table` class that comes in handy when creating *
 ### Example
 
 ```python
-from jycli.table import Table
+from jycli.components.table import Table
 
 table = Table("My beautiful table", ["Column1", "Column2"])
 table.add_row("Value1", "Value2")
