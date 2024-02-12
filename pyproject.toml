@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "jycli"
+version = "1.0.0"
+description = "Jython CLI package"
+authors = ["Luca Salvarani <lucasalvarani99@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [
+	{ include = "jycli" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+polyfills = {git = "https://github.com/LukeSavefrogs/jython21-backport.git"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+exclude = "jycli"
