@@ -123,7 +123,7 @@ class Console:
         """
         _term = self._environ.get("TERM", "")
         is_dumb = _term.lower() in ("dumb", "unknown")
-        return self.is_terminal and is_dumb
+        return self.is_terminal() and is_dumb
     
     def out(self, *args, **kwargs):
         """ Output to the terminal. 
