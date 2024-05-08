@@ -14,6 +14,11 @@ from jycli.style import Style, parse as parse_style # pyright: ignore[reportUnus
 from polyfills.stdlib.functions import enumerate
 from polyfills.stdlib.future_types.bool import *  # type: ignore # ==> Import the polyfills for boolean types
 
+try:
+    import java.lang.System as JavaSystem # pyright: ignore[reportMissingImports]
+except ImportError:
+    JavaSystem = None
+
 class Console:
     """ Represents the console. 
     
@@ -102,6 +107,9 @@ class Console:
         force_color = _os.environ.get("FORCE_COLOR")
         if force_color is not None:
             self._force_terminal = True
+            return True
+
+        if JavaSystem is not None and JavaSystem.console() is not None:
             return True
 
         isatty = getattr(self.file, "isatty", None)

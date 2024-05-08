@@ -84,9 +84,9 @@ class Table(Renderable):
         # type: (Console) -> str
         """Render the component to a console."""
         max_width = console.width
-        
+
         # Fallback to ASCII if the terminal is dumb
-        if console.is_dumb_terminal() and not self.box.ascii:
+        if (not console.is_terminal() or console.is_dumb_terminal()) and not self.box.ascii:
             self.box = box.ASCII
 
         # TODO: Remove variable duplication or use a custom parameter "adapt/equal size"
