@@ -12,6 +12,7 @@ from jycli.console.styling import ANSIColors
 from jycli.style import Style, parse as parse_style # pyright: ignore[reportUnusedImport]
 
 from polyfills.stdlib.functions import enumerate
+from polyfills.stdlib.future_types.bool import *  # type: ignore # ==> Import the polyfills for boolean types
 
 class Console:
     """ Represents the console. 
@@ -121,7 +122,7 @@ class Console:
         Returns:
             bool: True if writing to a dumb terminal, otherwise False.
         """
-        _term = self._environ.get("TERM", "")
+        _term = _os.environ.get("TERM", "")
         is_dumb = _term.lower() in ("dumb", "unknown")
         return self.is_terminal() and is_dumb
     
