@@ -3,6 +3,7 @@ import sys as _sys
 
 from polyfills.stdlib.functions import sum
 from polyfills.itertools import batched
+from jycli.components import box
 from jycli.console import Console
 from jycli.components._renderables import Renderable
 
@@ -37,7 +38,7 @@ else:
 
 class Table(Renderable):
     """ A table that can be rendered in the console or as HTML. """
-    def __init__(self, name, columns):
+    def __init__(self, name, columns, box=box.SQUARE):
         """ Creates a new table.
 
         Args:
@@ -54,6 +55,7 @@ class Table(Renderable):
         self.name = name
         self.columns = columns
         self.rows = []
+        self.box = box
 
     def add_row(self, *args):
         """ Adds a row to the table.
@@ -82,8 +84,10 @@ class Table(Renderable):
         # type: (Console) -> str
         """Render the component to a console."""
         max_width = console.width
-
-        middle_separator = " │ "
+        
+        # Fallback to ASCII if the terminal is dumb
+        if console.is_dumb_terminal() and not self.box.ascii:
+            self.box = box.ASCII
 
         # TODO: Remove variable duplication or use a custom parameter "adapt/equal size"
         if max_width is None:
@@ -100,7 +104,7 @@ class Table(Renderable):
         # ALWAYS recalculate each column's max length
         difference = (
             sum(max_lengths)
-            + (len(u(middle_separator)) * (len(self.columns) - 1))
+            + (len(u(" │ ")) * (len(self.columns) - 1))
             + (len(u("│ ")) + len(u(" │")))
             - max_width
         ) # type: ignore
@@ -120,12 +124,16 @@ class Table(Renderable):
         table = []
 
         # Table name
-        table.append("┌%s┐" % ("─" * (max_width - 2)))
-        table.append("│%s│" % self.name.center(max_width - 2))
-        table.append("├%s┤" % "┬".join([
-            "─" * (max_lengths[index] + 2)
-            for index in range(len(self.columns))
-        ]))
+        table.append("" * max_width)
+        table.append(self.name.center(max_width))
+        table.append("%s%s%s" % (
+            self.box.top_left,
+            self.box.top_divider.join([
+                self.box.top * (max_lengths[index] + 2)
+                for index in range(len(self.columns))
+            ]),
+            self.box.top_right,
+        ))
 
         # Header
         chunked_header = [
@@ -154,15 +162,23 @@ class Table(Renderable):
                 chunked_header[index].extend([" " * max_lengths[index]] * (header_longest_chunk - len(chunked_header[index])))
         
         table.append('\n'.join([
-            "│ %s │" % middle_separator.join(_row)
+            "%s %s %s" % (
+                self.box.head_left,
+                (" " + self.box.head_vertical + " ").join(_row), # TODO: Do not hardcode spaces, check size
+                self.box.head_right,
+            )
             for _row in zip(*chunked_header)
         ]))
 
         # Header separator
-        table.append("╞%s╡" % "╪".join([
-            "═" * (max_lengths[index] + 2)
-            for index in range(len(self.columns))
-        ]))
+        table.append("%s%s%s" % (
+            self.box.head_row_left,
+            self.box.head_row_cross.join([
+                self.box.head_row_horizontal * (max_lengths[index] + 2)
+                for index in range(len(self.columns))
+            ]),
+            self.box.head_row_right,
+        ))
 
         # Rows
         for _row_index in range(len(self.rows)):
@@ -190,21 +206,33 @@ class Table(Renderable):
                     chunked_row[index].extend([" " * max_lengths[index]] * (row_longest_chunk - len(chunked_row[index])))
             
             table.append('\n'.join([
-                "│ %s │" % middle_separator.join(_row)
+                "%s %s %s" % (
+                    self.box.mid_left,
+                    (" " + self.box.mid_vertical + " ").join(_row),
+                    self.box.mid_right,
+                )
                 for _row in zip(*chunked_row)
             ]))
             
             # Row separator (except for the last row)
             if _row_index < len(self.rows) - 1:
-                table.append("│ %s │" % middle_separator.join([
-                    "-" * max_lengths[index]
-                    for index in range(len(self.columns))
-                ]))
+                table.append("%s %s %s" % (
+                    self.box.row_left,
+                    (" " + self.box.row_cross + " ").join([
+                        self.box.row_horizontal * max_lengths[index]
+                        for index in range(len(self.columns))
+                    ]),
+                    self.box.row_right,
+                ))
 
-        table.append("└%s┘" % "┴".join([
-            "─" * (max_lengths[index] + 2)
-            for index in range(len(self.columns))
-        ]))
+        table.append("%s%s%s" % (
+            self.box.bottom_left,
+            self.box.bottom_divider.join([
+                self.box.bottom * (max_lengths[index] + 2)
+                for index in range(len(self.columns))
+            ]),
+            self.box.bottom_right,
+        ))
         return "\n".join(table)
     
     def render(self, max_width=None):
@@ -350,9 +378,9 @@ class Table(Renderable):
 
 
 if __name__ == "__main__":
-    table = Table("MyTable", ["Column1\ntest", "Column2asdasdasdaasdasdasdasdsdasd", "Column3"])
+    table = Table("MyTable", ["Column1\ntest", "Column2asdasdasdaasdasdasdasdsdasd", "Column3"], box=box.ASCII2)
     table.add_row("Value1aaaaaaaaaaaaaaaaaaaaaaaaaaaa", "Value2", "Value3")
     table.add_row("Value4", "Value5", "Value6")
     table.add_row("Value7", "Value8\nNew line", "Value9")
-    print(table.render(max_width=80))
-    print(table.to_html())
+    print(table.render())
+    # print(table.to_html())
