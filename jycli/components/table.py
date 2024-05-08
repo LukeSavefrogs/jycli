@@ -383,4 +383,3 @@ if __name__ == "__main__":
     table.add_row("Value4", "Value5", "Value6")
     table.add_row("Value7", "Value8\nNew line", "Value9")
     print(table.render())
-    # print(table.to_html())
