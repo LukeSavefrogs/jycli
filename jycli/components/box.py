@@ -27,22 +27,11 @@ class Box:
         self._box = box
         self.ascii = ascii
 
-        (
-            line_top,
-            line_head,
-            line_head_row,
-            line_mid,
-            line_row,
-            line_foot_row,
-            line_foot,
-            line_bottom,
-        ) = box.splitlines()
-
         # top
-        self.top_left, self.top, self.top_divider, self.top_right = list(line_top)
+        self.top_left, self.top, self.top_divider, self.top_right = box["top"]
 
         # head
-        self.head_left, _, self.head_vertical, self.head_right = list(line_head)
+        self.head_left, _, self.head_vertical, self.head_right = box["head"]
 
         # head_row
         (
@@ -50,15 +39,13 @@ class Box:
             self.head_row_horizontal,
             self.head_row_cross,
             self.head_row_right,
-        ) = list(line_head_row)
+        ) = list(box["head_row"])
 
         # mid
-        self.mid_left, _, self.mid_vertical, self.mid_right = list(line_mid)
+        self.mid_left, _, self.mid_vertical, self.mid_right = box["mid"]
 
         # row
-        self.row_left, self.row_horizontal, self.row_cross, self.row_right = list(
-            line_row
-        )
+        self.row_left, self.row_horizontal, self.row_cross, self.row_right = box["row"]
 
         # foot_row
         (
@@ -66,15 +53,13 @@ class Box:
             self.foot_row_horizontal,
             self.foot_row_cross,
             self.foot_row_right,
-        ) = iter(line_foot_row)
+        ) = box["foot_row"]
 
         # foot
-        self.foot_left, _, self.foot_vertical, self.foot_right = list(line_foot)
+        self.foot_left, _, self.foot_vertical, self.foot_right = box["foot"]
 
         # bottom
-        self.bottom_left, self.bottom, self.bottom_divider, self.bottom_right = list(
-            line_bottom
-        )
+        self.bottom_left, self.bottom, self.bottom_divider, self.bottom_right = box["bottom"]
 
     def __repr__(self):
         return "Box(...)"
@@ -84,220 +69,224 @@ class Box:
 
 
 # fmt: off
-ASCII = Box(
-    "+--+\n"
-    "| ||\n"
-    "|-+|\n"
-    "| ||\n"
-    "|-+|\n"
-    "|-+|\n"
-    "| ||\n"
-    "+--+\n",
+ASCII = Box({
+    "top":      ["+","-","-","+"],
+    "head":     ["|"," ","|","|"],
+    "head_row": ["|","-","+","|"],
+    "mid":      ["|"," ","|","|"],
+    "row":      ["|","-","+","|"],
+    "foot_row": ["|","-","+","|"],
+    "foot":     ["|"," ","|","|"],
+    "bottom":   ["+","-","-","+"],
+    },
     ascii=True,
 )
 
-ASCII2 = Box(
-    "+-++\n"
-    "| ||\n"
-    "+-++\n"
-    "| ||\n"
-    "+-++\n"
-    "+-++\n"
-    "| ||\n"
-    "+-++\n",
+ASCII2 = Box({
+    "top":      ["+","-","+","+"],
+    "head":     ["|"," ","|","|"],
+    "head_row": ["+","-","+","+"],
+    "mid":      ["|"," ","|","|"],
+    "row":      ["+","-","+","+"],
+    "foot_row": ["+","-","+","+"],
+    "foot":     ["|"," ","|","|"],
+    "bottom":   ["+","-","+","+"],
+    },
     ascii=True,
 )
 
-ASCII_DOUBLE_HEAD = Box(
-    "+-++\n"
-    "| ||\n"
-    "+=++\n"
-    "| ||\n"
-    "+-++\n"
-    "+-++\n"
-    "| ||\n"
-    "+-++\n",
+ASCII_DOUBLE_HEAD = Box({
+    "top":      ["+","-","+","+"],
+    "head":     ["|"," ","|","|"],
+    "head_row": ["+","=","+","+"],
+    "mid":      ["|"," ","|","|"],
+    "row":      ["+","-","+","+"],
+    "foot_row": ["+","-","+","+"],
+    "foot":     ["|"," ","|","|"],
+    "bottom":   ["+","-","+","+"],
+    },
     ascii=True,
 )
 
-SQUARE = Box(
-    "┌─┬┐\n"
-    "│ ││\n"
-    "├─┼┤\n"
-    "│ ││\n"
-    "├─┼┤\n"
-    "├─┼┤\n"
-    "│ ││\n"
-    "└─┴┘\n"
-)
+SQUARE = Box({
+    "top":      ["┌","─","┬","┐"],
+    "head":     ["│"," ","│","│"],
+    "head_row": ["├","─","┼","┤"],
+    "mid":      ["│"," ","│","│"],
+    "row":      ["├","─","┼","┤"],
+    "foot_row": ["├","─","┼","┤"],
+    "foot":     ["│"," ","│","│"],
+    "bottom":   ["└","─","┴","┘"],
+})
 
-SQUARE_DOUBLE_HEAD = Box(
-    "┌─┬┐\n"
-    "│ ││\n"
-    "╞═╪╡\n"
-    "│ ││\n"
-    "├─┼┤\n"
-    "├─┼┤\n"
-    "│ ││\n"
-    "└─┴┘\n"
-)
+SQUARE_DOUBLE_HEAD = Box({
+    "top":      ["┌","─","┬","┐"],
+    "head":     ["│"," ","│","│"],
+    "head_row": ["╞","═","╪","╡"],
+    "mid":      ["│"," ","│","│"],
+    "row":      ["├","─","┼","┤"],
+    "foot_row": ["├","─","┼","┤"],
+    "foot":     ["│"," ","│","│"],
+    "bottom":   ["└","─","┴","┘"],
+})
 
-MINIMAL = Box(
-    "  ╷ \n"
-    "  │ \n"
-    "╶─┼╴\n"
-    "  │ \n"
-    "╶─┼╴\n"
-    "╶─┼╴\n"
-    "  │ \n"
-    "  ╵ \n"
-)
-
-
-MINIMAL_HEAVY_HEAD = Box(
-    "  ╷ \n"
-    "  │ \n"
-    "╺━┿╸\n"
-    "  │ \n"
-    "╶─┼╴\n"
-    "╶─┼╴\n"
-    "  │ \n"
-    "  ╵ \n"
-)
-
-MINIMAL_DOUBLE_HEAD = Box(
-    "  ╷ \n"
-    "  │ \n"
-    " ═╪ \n"
-    "  │ \n"
-    " ─┼ \n"
-    " ─┼ \n"
-    "  │ \n"
-    "  ╵ \n"
-)
+MINIMAL = Box({
+    "top":      [" "," ","╷"," "],
+    "head":     [" "," ","│"," "],
+    "head_row": ["╶","─","┼","╴"],
+    "mid":      [" "," ","│"," "],
+    "row":      ["╶","─","┼","╴"],
+    "foot_row": ["╶","─","┼","╴"],
+    "foot":     [" "," ","│"," "],
+    "bottom":   [" "," ","╵"," "],
+})
 
 
-SIMPLE = Box(
-    "    \n"
-    "    \n"
-    " ── \n"
-    "    \n"
-    "    \n"
-    " ── \n"
-    "    \n"
-    "    \n"
-)
+MINIMAL_HEAVY_HEAD = Box({
+    "top":      [" "," ","╷"," "],
+    "head":     [" "," ","│"," "],
+    "head_row": ["╺","━","┿","╸"],
+    "mid":      [" "," ","│"," "],
+    "row":      ["╶","─","┼","╴"],
+    "foot_row": ["╶","─","┼","╴"],
+    "foot":     [" "," ","│"," "],
+    "bottom":   [" "," ","╵"," "],
+})
 
-SIMPLE_HEAD = Box(
-    "    \n"
-    "    \n"
-    " ── \n"
-    "    \n"
-    "    \n"
-    "    \n"
-    "    \n"
-    "    \n"
-)
-
-
-SIMPLE_HEAVY = Box(
-    "    \n"
-    "    \n"
-    " ━━ \n"
-    "    \n"
-    "    \n"
-    " ━━ \n"
-    "    \n"
-    "    \n"
-)
+MINIMAL_DOUBLE_HEAD = Box({
+    "top":      [" "," ","╷"," "],
+    "head":     [" "," ","│"," "],
+    "head_row": [" ","═","╪"," "],
+    "mid":      [" "," ","│"," "],
+    "row":      [" ","─","┼"," "],
+    "foot_row": [" ","─","┼"," "],
+    "foot":     [" "," ","│"," "],
+    "bottom":   [" "," ","╵"," "],
+})
 
 
-HORIZONTALS = Box(
-    " ── \n"
-    "    \n"
-    " ── \n"
-    "    \n"
-    " ── \n"
-    " ── \n"
-    "    \n"
-    " ── \n"
-)
+SIMPLE = Box({
+    "top":      [" "," "," "," "],
+    "head":     [" "," "," "," "],
+    "head_row": [" ","─","─"," "],
+    "mid":      [" "," "," "," "],
+    "row":      [" "," "," "," "],
+    "foot_row": [" ","─","─"," "],
+    "foot":     [" "," "," "," "],
+    "bottom":   [" "," "," "," "],
+})
 
-ROUNDED = Box(
-    "╭─┬╮\n"
-    "│ ││\n"
-    "├─┼┤\n"
-    "│ ││\n"
-    "├─┼┤\n"
-    "├─┼┤\n"
-    "│ ││\n"
-    "╰─┴╯\n"
-)
+SIMPLE_HEAD = Box({
+    "top":      [" "," "," "," "],
+    "head":     [" "," "," "," "],
+    "head_row": [" ","─","─"," "],
+    "mid":      [" "," "," "," "],
+    "row":      [" "," "," "," "],
+    "foot_row": [" "," "," "," "],
+    "foot":     [" "," "," "," "],
+    "bottom":   [" "," "," "," "],
+})
 
-HEAVY = Box(
-    "┏━┳┓\n"
-    "┃ ┃┃\n"
-    "┣━╋┫\n"
-    "┃ ┃┃\n"
-    "┣━╋┫\n"
-    "┣━╋┫\n"
-    "┃ ┃┃\n"
-    "┗━┻┛\n"
-)
 
-HEAVY_EDGE = Box(
-    "┏━┯┓\n"
-    "┃ │┃\n"
-    "┠─┼┨\n"
-    "┃ │┃\n"
-    "┠─┼┨\n"
-    "┠─┼┨\n"
-    "┃ │┃\n"
-    "┗━┷┛\n"
-)
+SIMPLE_HEAVY = Box({
+    "top":      [" "," "," "," "],
+    "head":     [" "," "," "," "],
+    "head_row": [" ","━","━"," "],
+    "mid":      [" "," "," "," "],
+    "row":      [" "," "," "," "],
+    "foot_row": [" ","━","━"," "],
+    "foot":     [" "," "," "," "],
+    "bottom":   [" "," "," "," "],
+})
 
-HEAVY_HEAD = Box(
-    "┏━┳┓\n"
-    "┃ ┃┃\n"
-    "┡━╇┩\n"
-    "│ ││\n"
-    "├─┼┤\n"
-    "├─┼┤\n"
-    "│ ││\n"
-    "└─┴┘\n"
-)
 
-DOUBLE = Box(
-    "╔═╦╗\n"
-    "║ ║║\n"
-    "╠═╬╣\n"
-    "║ ║║\n"
-    "╠═╬╣\n"
-    "╠═╬╣\n"
-    "║ ║║\n"
-    "╚═╩╝\n"
-)
+HORIZONTALS = Box({
+    "top":      [" ","─","─"," "],
+    "head":     [" "," "," "," "],
+    "head_row": [" ","─","─"," "],
+    "mid":      [" "," "," "," "],
+    "row":      [" ","─","─"," "],
+    "foot_row": [" ","─","─"," "],
+    "foot":     [" "," "," "," "],
+    "bottom":   [" ","─","─"," "],
+})
 
-DOUBLE_EDGE = Box(
-    "╔═╤╗\n"
-    "║ │║\n"
-    "╟─┼╢\n"
-    "║ │║\n"
-    "╟─┼╢\n"
-    "╟─┼╢\n"
-    "║ │║\n"
-    "╚═╧╝\n"
-)
+ROUNDED = Box({
+    "top":      ["╭","─","┬","╮"],
+    "head":     ["│"," ","│","│"],
+    "head_row": ["├","─","┼","┤"],
+    "mid":      ["│"," ","│","│"],
+    "row":      ["├","─","┼","┤"],
+    "foot_row": ["├","─","┼","┤"],
+    "foot":     ["│"," ","│","│"],
+    "bottom":   ["╰","─","┴","╯"],
+})
 
-MARKDOWN = Box(
-    "    \n"
-    "| ||\n"
-    "|-||\n"
-    "| ||\n"
-    "|-||\n"
-    "|-||\n"
-    "| ||\n"
-    "    \n",
+HEAVY = Box({
+    "top":      ["┏","━","┳","┓"],
+    "head":     ["┃"," ","┃","┃"],
+    "head_row": ["┣","━","╋","┫"],
+    "mid":      ["┃"," ","┃","┃"],
+    "row":      ["┣","━","╋","┫"],
+    "foot_row": ["┣","━","╋","┫"],
+    "foot":     ["┃"," ","┃","┃"],
+    "bottom":   ["┗","━","┻","┛"],
+})
+
+HEAVY_EDGE = Box({
+    "top":      ["┏","━","┯","┓"],
+    "head":     ["┃"," ","│","┃"],
+    "head_row": ["┠","─","┼","┨"],
+    "mid":      ["┃"," ","│","┃"],
+    "row":      ["┠","─","┼","┨"],
+    "foot_row": ["┠","─","┼","┨"],
+    "foot":     ["┃"," ","│","┃"],
+    "bottom":   ["┗","━","┷","┛"],
+})
+
+HEAVY_HEAD = Box({
+    "top":      ["┏","━","┳","┓"],
+    "head":     ["┃"," ","┃","┃"],
+    "head_row": ["┡","━","╇","┩"],
+    "mid":      ["│"," ","│","│"],
+    "row":      ["├","─","┼","┤"],
+    "foot_row": ["├","─","┼","┤"],
+    "foot":     ["│"," ","│","│"],
+    "bottom":   ["└","─","┴","┘"],
+})
+
+DOUBLE = Box({
+    "top":      ["╔","═","╦","╗"],
+    "head":     ["║"," ","║","║"],
+    "head_row": ["╠","═","╬","╣"],
+    "mid":      ["║"," ","║","║"],
+    "row":      ["╠","═","╬","╣"],
+    "foot_row": ["╠","═","╬","╣"],
+    "foot":     ["║"," ","║","║"],
+    "bottom":   ["╚","═","╩","╝"],
+})
+
+DOUBLE_EDGE = Box({
+    "top":      ["╔","═","╤","╗"],
+    "head":     ["║"," ","│","║"],
+    "head_row": ["╟","─","┼","╢"],
+    "mid":      ["║"," ","│","║"],
+    "row":      ["╟","─","┼","╢"],
+    "foot_row": ["╟","─","┼","╢"],
+    "foot":     ["║"," ","│","║"],
+    "bottom":   ["╚","═","╧","╝"],
+})
+
+MARKDOWN = Box({
+    "top":      [" "," "," "," "],
+    "head":     ["|"," ","|","|"],
+    "head_row": ["|","-","|","|"],
+    "mid":      ["|"," ","|","|"],
+    "row":      ["|","-","|","|"],
+    "foot_row": ["|","-","|","|"],
+    "foot":     ["|"," ","|","|"],
+    "bottom":   [" "," "," "," "],
+    },
     ascii=True,
 )
 # fmt: on
