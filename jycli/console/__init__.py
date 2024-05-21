@@ -167,7 +167,12 @@ class Console:
             style = parse_style(style)
         style_reset = style.get_reset_style()
 
-        file.write(style + sep.join([str(arg) for arg in args]) + style_reset + end)
+        file.write(''.join([
+            style.__console_print__(self),
+            sep.join([str(arg) for arg in args]),
+            style_reset.__console_print__(self),
+            end,
+        ]))
         
     def print(self, *args, **kwargs):
         """ Print the console to the specified file.

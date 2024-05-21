@@ -1,6 +1,8 @@
 import re as _re
 import unittest as _unittest
 
+from jycli.components._renderables import Renderable
+
 STYLES = {
     "effects": {
         "reset": "0",
@@ -67,7 +69,7 @@ STYLES = {
 }
 
 
-class Style:
+class Style(Renderable):
     def __init__(self, effect=None, foreground=None, background=None):
         # type: (str|int|None, str|int|None, str|int|None) -> None
         self.effect = effect
@@ -121,6 +123,13 @@ class Style:
     
     def __sub__(self, other):
         raise NotImplementedError("Subtraction is not supported for %s objects." % self.__class__.__name__)
+
+    def __console_print__(self, console):
+        """Render the component to a console."""
+        if (not console.is_terminal() or console.is_dumb_terminal()):
+            return ""
+        
+        return str(self)
 
     def __str__(self):
         if (
