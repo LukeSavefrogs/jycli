@@ -24,6 +24,7 @@ class Rule(Renderable):
         self.title = title
         self.characters = characters
         self.style = parse_style(style)
+        self.style_reset = self.style.get_reset_style()
 
         self.width = None
         if width is not None and str(width).isdigit():
@@ -67,13 +68,12 @@ class Rule(Renderable):
 
             # if len(self.title) % 2:
             #    header_content += self.characters[0]
-                
     
         # Header
         output.append("%s%s%s" % (
-            self.style,
+            self.style.__console_print__(console),
             header_content,
-            parse_style("reset"),
+            self.style_reset.__console_print__(console),
         ))
 
         return "\n".join(output)

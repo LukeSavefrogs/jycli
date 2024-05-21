@@ -28,10 +28,13 @@ class Panel(Renderable):
         self.title = title
         self.subtitle = subtitle
         self.expand = expand
-        self.style = parse_style(style)
-        self.border_style = parse_style(border_style)
         self.box = box
 
+        self.style = parse_style(style)
+        self.style_reset = self.style.get_reset_style()
+        self.border_style = parse_style(border_style)
+        self.border_style_reset = self.border_style.get_reset_style()
+        
         self.width = None
         if width is not None and str(width).isdigit():
             self.width = int(width)
@@ -84,11 +87,11 @@ class Panel(Renderable):
         output.append(
             "%s%s%s%s%s"
             % (
-                self.border_style,
+                self.border_style.__console_print__(console),
                 self.box.top_left,
                 header_content,
                 self.box.top_right,
-                parse_style("reset"),
+                self.border_style_reset.__console_print__(console),
             )
         )
         
@@ -99,13 +102,13 @@ class Panel(Renderable):
                     (
                         "%s%s%s %s %s%s%s"
                         % (
-                            self.border_style,
+                            self.border_style.__console_print__(console),
                             self.box.mid_left,
-                            parse_style("reset"),
+                            self.border_style_reset.__console_print__(console),
                             _line.ljust(console_width - 4),
-                            self.border_style,
+                            self.border_style.__console_print__(console),
                             self.box.mid_right,
-                            parse_style("reset"),
+                            self.border_style_reset.__console_print__(console),
                         )
                     )
                     for _line in self.renderable.splitlines()
@@ -117,11 +120,11 @@ class Panel(Renderable):
         output.append(
             "%s%s%s%s%s"
             % (
-                self.border_style,
+                self.border_style.__console_print__(console),
                 self.box.bottom_left,
                 self.box.bottom * (console_width - 2),
                 self.box.bottom_right,
-                parse_style("reset"),
+                self.border_style_reset.__console_print__(console)
             )
         )
 
