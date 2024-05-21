@@ -161,12 +161,14 @@ class Console:
         if file is None:
             file = self.file
 
+        style_reset = parse_style("reset")
         if style is None:
             style = Style()
+            style_reset = ""
         elif not isinstance(style, Style):
             style = parse_style(style)
 
-        file.write(style + sep.join([str(arg) for arg in args]) + style + end)
+        file.write(style + sep.join([str(arg) for arg in args]) + style_reset + end)
         
     def print(self, *args, **kwargs):
         """ Print the console to the specified file.
@@ -205,4 +207,5 @@ if __name__ == "__main__":
     console.clear()
     console.move_cursor(0, 0)
     console.print("Hello, World!")
+    console.print("Hello, World!", style="bold red")
     console.print("Terminal size: %s" % console.get_terminal_size())
