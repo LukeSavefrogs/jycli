@@ -19,6 +19,12 @@ try:
 except ImportError:
     JavaSystem = None
 
+try:
+    apply # pyright: ignore[reportUndefinedVariable]
+except NameError:
+    def apply(func, args, kwargs):
+        return eval("func(*args, **kwargs)")
+
 class Console:
     """ Represents the console. 
     
