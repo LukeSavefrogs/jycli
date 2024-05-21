@@ -161,12 +161,11 @@ class Console:
         if file is None:
             file = self.file
 
-        style_reset = parse_style("reset")
         if style is None:
             style = Style()
-            style_reset = ""
         elif not isinstance(style, Style):
             style = parse_style(style)
+        style_reset = style.get_reset_style()
 
         file.write(style + sep.join([str(arg) for arg in args]) + style_reset + end)
         

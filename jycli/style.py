@@ -166,6 +166,39 @@ class Style:
         # type: () -> str
         """ Get the ANSI escape code for the style. """
         return str(self).replace("\033", "\\033")
+    
+    def get_reset_style(self):
+        """ Returns a style that resets the current style to the default style using
+            only the minimum number of escape codes necessary.
+
+            Example:
+                ```python
+                >>> style = Style(background="green")
+                >>> style.get_reset_style()
+                Style(background="reset")
+                >>> style = Style(foreground="red", background="green")
+                >>> style.get_reset_style()
+                Style(foreground="reset", background="reset")
+                >>> style = Style()
+                >>> style.get_reset_style()
+                Style()
+                ```
+        """
+        _effect, _foreground, _background = (None,) * 3
+        
+        if self.effect is not None:
+            _effect = "reset"
+        if self.foreground is not None:
+            _foreground = "reset"
+        if self.background is not None:
+            _background = "reset"
+
+        return Style(
+            effect=_effect,
+            foreground=_foreground,
+            background=_background
+        )
+
 
 def parse(text):
     # type: (str) -> Style
@@ -303,4 +336,5 @@ class ParserTestCase(_unittest.TestCase):
 
 
 if __name__ == "__main__":
+    print("Style(): '%s'" % Style())
     _unittest.main()
