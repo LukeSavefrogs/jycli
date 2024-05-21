@@ -4,6 +4,7 @@ from polyfills.stdlib.future_types.bool import *  # type: ignore # ==> Import th
 from jycli.console import Console
 from jycli.components._renderables import Renderable
 from jycli.style import parse as parse_style
+from jycli.components import box
 
 
 class Panel(Renderable):
@@ -21,6 +22,7 @@ class Panel(Renderable):
         border_style="",
         width=None, # type: int|None
         height=None, # type: int|None
+        box=box.SQUARE,
     ):
         self.renderable = renderable
         self.title = title
@@ -28,6 +30,7 @@ class Panel(Renderable):
         self.expand = expand
         self.style = parse_style(style)
         self.border_style = parse_style(border_style)
+        self.box = box
 
         self.width = None
         if width is not None and str(width).isdigit():
@@ -43,13 +46,17 @@ class Panel(Renderable):
         console_width = self.width
         if console_width is None:
             console_width = console.width
-        
+
+        # Fallback to ASCII if the terminal is dumb
+        if (not console.is_terminal() or console.is_dumb_terminal()) and not self.box.ascii:
+            self.box = box.ASCII
+
         output = []
         padding_size = 2
         border_width = int(console_width - 2)
 
         # Title
-        header_content = "─" * (console_width - 2) # Default to a line of dashes
+        header_content = self.box.top * (console_width - 2) # Default to a line of dashes
         if self.title is not None:
             border_width = int(
                 (
@@ -67,18 +74,20 @@ class Panel(Renderable):
                 extra_border_width = 1
 
             header_content = "".join([
-                ("─" * (border_width + extra_border_width)),
+                (self.box.top * (border_width + extra_border_width)),
                 (" " * padding_size),
                 (self.title),
                 (" " * padding_size),
-                ("─" * border_width),
+                (self.box.top * border_width),
             ])
 
         output.append(
-            "%s┌%s┐%s"
+            "%s%s%s%s%s"
             % (
                 self.border_style,
+                self.box.top_left,
                 header_content,
+                self.box.top_right,
                 parse_style("reset"),
             )
         )
@@ -88,12 +97,14 @@ class Panel(Renderable):
             "\n".join(
                 [
                     (
-                        "%s│%s %s %s│%s"
+                        "%s%s%s %s %s%s%s"
                         % (
                             self.border_style,
+                            self.box.mid_left,
                             parse_style("reset"),
                             _line.ljust(console_width - 4),
                             self.border_style,
+                            self.box.mid_right,
                             parse_style("reset"),
                         )
                     )
@@ -104,10 +115,12 @@ class Panel(Renderable):
 
         # Footer
         output.append(
-            "%s└%s┘%s"
+            "%s%s%s%s%s"
             % (
                 self.border_style,
-                "─" * (console_width - 2),
+                self.box.bottom_left,
+                self.box.bottom * (console_width - 2),
+                self.box.bottom_right,
                 parse_style("reset"),
             )
         )
@@ -124,19 +137,22 @@ if __name__ == "__main__":  # pragma: no cover
     # from .box import DOUBLE, ROUNDED
     # from .padding import Padding
 
+    p0 = Panel(
+        "Hello, World!",
+    )
     p1 = Panel(
         "Hello, World!",
         title="Test panel",
         border_style="green",
         style="white on blue",
-        # box=DOUBLE,
+        box=box.DOUBLE,
         # padding=1,
     )
     p2 = Panel(
         "Hello, World!",
         title="TEST2",
         border_style="red",
-        # box=DOUBLE,
+        box=box.DOUBLE,
         # padding=1,
     )
     p3 = Panel(
@@ -148,6 +164,9 @@ if __name__ == "__main__":  # pragma: no cover
         border_style="blue on yellow",
         width=50,
     )
+
+    c.print()
+    c.print(p0)
 
     c.print()
     c.print(p1)

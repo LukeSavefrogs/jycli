@@ -1,29 +1,12 @@
 from __future__ import nested_scopes
 
-import sys as _sys
 import math as _math
 
 from polyfills.stdlib.future_types.bool import *  # type: ignore # ==> Import the polyfills for boolean types
 from jycli.console import Console
 from jycli.components._renderables import Renderable
 from jycli.style import parse as parse_style
-
-if _sys.version_info[0] < 3:
-  text_type = unicode # type: ignore
-  binary_type = str
-  def b(x):
-    return x
-  def u(x):
-    return unicode(x, "utf-8")
-else:
-  text_type = str
-  binary_type = bytes # type: ignore
-  import codecs
-  def b(x):
-    return codecs.latin_1_encode(x)[0]
-  def u(x):
-    return x
-
+from jycli.utils.characters import is_ascii, u
 
 class Rule(Renderable):
     """ A horizontal rule is a line that separates content. It can have a title.
@@ -52,6 +35,12 @@ class Rule(Renderable):
         console_width = self.width
         if console_width is None:
             console_width = console.width
+
+        # Fallback to ASCII if the terminal is dumb
+        if (
+            not console.is_terminal() or console.is_dumb_terminal()
+        ) and not is_ascii(self.characters):
+            self.characters = "-"
 
         output = []
         padding_size = 2
