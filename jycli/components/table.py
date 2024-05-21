@@ -1,40 +1,12 @@
 """ Contains the Table class. """
-import sys as _sys
-
 from polyfills.stdlib.functions import sum
 from polyfills.itertools import batched
 from jycli.components import box
 from jycli.console import Console
 from jycli.components._renderables import Renderable
+from jycli.utils.characters import u
 
 __all__ = ["Table"]
-
-
-# On Jython 2.1, the `len()` function over a unicode string returns a wrong value:
-# wsadmin>len("│") # expect: 1
-# 3
-# 
-# This is solved by explicitly converting the string from UTF8 to unicode and then getting the length:
-# wsadmin>len(unicode("│", "utf-8")) # expect: 1
-# 1
-#
-# Source: https://stackoverflow.com/a/16476580/8965861
-if _sys.version_info[0] < 3:
-  text_type = unicode
-  binary_type = str
-  def b(x):
-    return x
-  def u(x):
-    return unicode(x, "utf-8")
-else:
-  text_type = str
-  binary_type = bytes
-  import codecs
-  def b(x):
-    return codecs.latin_1_encode(x)[0]
-  def u(x):
-    return x
-
 
 class Table(Renderable):
     """ A table that can be rendered in the console or as HTML. """
