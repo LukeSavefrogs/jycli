@@ -123,6 +123,13 @@ class Style:
         raise NotImplementedError("Subtraction is not supported for %s objects." % self.__class__.__name__)
 
     def __str__(self):
+        if (
+            self.effect is None
+            and self.foreground is None
+            and self.background is None
+        ):
+            return ""
+        
         return "\033[%sm" % ';'.join([
             _style
             for _style in (self.effect, self.foreground, self.background)
