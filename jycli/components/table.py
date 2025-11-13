@@ -8,6 +8,33 @@ from jycli.utils.characters import u
 
 __all__ = ["Table"]
 
+# def flatten(__iterable):
+#     return [_ for i in __iterable for _ in i]
+
+def flatten(__iterable, max_depth=1, empty_placeholder=None):
+    """ Flattens an iterable up to a certain depth.
+
+    Args:
+        __iterable (iterable): The iterable to flatten.
+        max_depth (int, optional): The maximum depth to flatten. Defaults to `1`. Use `-1` for infinite depth.
+        empty_placeholder (any, optional): The value to use for empty iterables. Defaults to `None` (remove the element).
+    """
+    _tmp = []
+    for element in __iterable:
+        if type(element) in (type([]), type(())):
+            if len(element) == 0 and empty_placeholder is not None:
+                _tmp.append(empty_placeholder)
+                continue
+            
+            if max_depth > 1 or max_depth < 0:
+                _tmp.extend(flatten(element, max_depth=max_depth - 1, empty_placeholder=empty_placeholder))
+                continue
+
+            _tmp.extend(element)
+        else:
+            _tmp.append(element)
+    return _tmp
+
 class Table(Renderable):
     """ A table that can be rendered in the console or as HTML. """
     def __init__(self, name, columns, box=box.SQUARE):
@@ -158,15 +185,13 @@ class Table(Renderable):
 
             chunked_row = [
                 [
-                    # 3. Align all lines to the left
+                    # 2. Align all lines to the left
                     _chunked_string.ljust(max_lengths[index])
                     
-                    # 2. Join the chunks with '\n', then split them again, so that 
-                    #    each chunk (as well as strings containing `\n`) is now a line.
-                    for _chunked_string in '\n'.join(
-                        # 1. Split the row into chunks of the maximum length
-                        batched(row[index], max_lengths[index])
-                    ).splitlines()
+                    # 1. Split the row into chunks of the maximum length
+                    for _chunked_string in flatten([
+                        batched(line, max_lengths[index]) for line in row[index].splitlines()
+                    ], empty_placeholder="")
                 ]
                 
                 for index in range(len(row))
@@ -350,8 +375,19 @@ class Table(Renderable):
 
 
 if __name__ == "__main__":
-    table = Table("MyTable", ["Column1\ntest", "Column2asdasdasdaasdasdasdasdsdasd", "Column3"], box=box.ASCII2)
-    table.add_row("Value1aaaaaaaaaaaaaaaaaaaaaaaaaaaa", "Value2", "Value3")
-    table.add_row("Value4", "Value5", "Value6")
-    table.add_row("Value7", "Value8\nNew line", "Value9")
+    table = Table(
+        name="Table name",
+        columns=["First column", "Second column"],
+    )
+
+    table.add_row(
+        "My first value",
+        "\n".join([
+            "First very very long line that needs to be wrapped properly in the table rendering to avoid overflow issues in the console output.",
+            "",
+            "More options:",
+            "- test quite long first option that does not need wrapping",
+            "- test option 2",
+        ])
+    )
     print(table.render())
