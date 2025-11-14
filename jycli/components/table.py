@@ -362,7 +362,7 @@ class Table(Renderable):
                     or str(_col).find(quotechar) != -1
                     or str(_col).find(lineterminator) != -1
                 )
-                    and "%s%s%s" % (quotechar, str(_col))
+                    and "%s%s%s" % (quotechar, str(_col), quotechar)
                     or _col
             ) for _col in self.columns
         ]))
@@ -376,7 +376,7 @@ class Table(Renderable):
                         or str(_column).find(quotechar) != -1
                         or str(_column).find(lineterminator) != -1
                     )
-                        and "%s%s%s" % (quotechar, str(_column))
+                        and "%s%s%s" % (quotechar, str(_column), quotechar)
                         or _column
                 )
                 for _column in row
@@ -424,7 +424,7 @@ class HtmlTableAttributes:
 if __name__ == "__main__":
     table = Table(
         name="Table name",
-        columns=["First column", "Second column"],
+        columns=["First column with\nnew line", "Second column"],
     )
 
     table.add_row(
@@ -437,9 +437,4 @@ if __name__ == "__main__":
             "- test option 2",
         ])
     )
-    print(table.to_html(attributes=HtmlTableAttributes(
-        align="left",
-        background_color="#FFFFFF",
-        height="70%",
-        width="",
-    )))
+    print(table.to_csv())
