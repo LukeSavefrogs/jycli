@@ -397,7 +397,7 @@ class HtmlTableAttributes:
             align="center",
             background_color="",
             border=1,
-            cell_padding=0,
+            cell_padding=1,
             cell_spacing=0,
             width="",
             height="",
