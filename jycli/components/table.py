@@ -102,7 +102,7 @@ class Table(Renderable):
 
         # ALWAYS recalculate each column's max length
         difference = (
-            sum(max_lengths)
+            sum(max_lengths) # pyright: ignore[reportArgumentType]
             + (len(u(" │ ")) * (len(self.columns) - 1))
             + (len(u("│ ")) + len(u(" │")))
             - max_width
@@ -259,9 +259,12 @@ class Table(Renderable):
         """
         return self.__console_print__(console=Console(width=max_width))
 
-    def to_html(self):
+    def to_html(self, attributes=None):
         """ Renders the table as HTML.
-        
+
+        Args:
+            attributes (HtmlTableAttributes, optional): The configuration to use for rendering the HTML table. Defaults to `None`.
+
         Returns:
             html (str): The HTML representation of the table.
             
@@ -283,7 +286,21 @@ class Table(Renderable):
             </table>
             ```
         """
-        html = ['<table cellpadding="0" cellspacing="0" align="center" border="1">']
+        if attributes is None:
+            attributes = HtmlTableAttributes()
+            
+        html = [
+            '<table %s>' % ' '.join([ '%s="%s"' % (name, value) for name, value in [
+                    ('align', attributes.align),
+                    ('bgColor', attributes.background_color),
+                    ('cellPadding', attributes.cell_padding),
+                    ('cellSpacing', attributes.cell_spacing),
+                    ('border', attributes.border_size),
+                    ('width', attributes.width),
+                    ('height', attributes.height),
+                ] if value is not None and str(value).strip() != ""
+            ])
+        ]
 
         # Table name
         html.append("<caption>%s</caption>" % self._html_escape_string(self.name))
@@ -373,6 +390,36 @@ class Table(Renderable):
     def __repr__(self):
         return "%s (%d rows)" % (self.name, len(self.rows))
 
+class HtmlTableAttributes:
+    """ Configuration for HTML table rendering. """
+    def __init__(
+            self, 
+            align="center",
+            background_color="",
+            border=1,
+            cell_padding=0,
+            cell_spacing=0,
+            width="",
+            height="",
+        ):
+        """ Contains the general configuration for HTML table rendering.
+
+        Args:
+            align (str, optional): The alignment of the table within its parent element. Defaults to `"center"`.
+            background_color (str, optional): The background color of the table. Defaults to `""`.
+            border (int, optional): The border size of the table. Defaults to `1`.
+            cell_padding (int, optional): The cell padding size. Defaults to `0`.
+            cell_spacing (int, optional): The cell spacing size. Defaults to `0`.
+            width (str, optional): The width of the table. Defaults to `""`.
+            height (str, optional): The height of the table. Defaults to `""`.
+        """
+        self.align = align
+        self.background_color = background_color
+        self.border_size = border
+        self.cell_padding = cell_padding
+        self.cell_spacing = cell_spacing
+        self.width = width
+        self.height = height
 
 if __name__ == "__main__":
     table = Table(
@@ -390,4 +437,9 @@ if __name__ == "__main__":
             "- test option 2",
         ])
     )
-    print(table.render())
+    print(table.to_html(attributes=HtmlTableAttributes(
+        align="left",
+        background_color="#FFFFFF",
+        height="70%",
+        width="",
+    )))
