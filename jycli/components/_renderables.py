@@ -30,3 +30,19 @@ class Renderable:
                 .replace("\r", "")      # Remove carriage returns
                 .replace("\n", "<br>")
         )
+    
+    def _csv_escape_string(self, string):
+        # type: (str) -> str
+        """ Escape the provided string and make it safe to be inserted as CSV. 
+        
+        Also, replace some special characters with spaces.
+        
+        Args:
+            string(str): The string that needs to be processed.
+        
+        Returns:
+            str: The escaped string
+        """
+        return (
+            string.replace('"', '""')   # Escape double quotes (RFC4180 https://datatracker.ietf.org/doc/html/rfc4180#section-2)
+        )

@@ -362,7 +362,7 @@ class Table(Renderable):
                     or str(_col).find(quotechar) != -1
                     or str(_col).find(lineterminator) != -1
                 )
-                    and "%s%s%s" % (quotechar, str(_col), quotechar)
+                    and "%s%s%s" % (quotechar, self._csv_escape_string(str(_col)), quotechar)
                     or _col
             ) for _col in self.columns
         ]))
@@ -376,7 +376,7 @@ class Table(Renderable):
                         or str(_column).find(quotechar) != -1
                         or str(_column).find(lineterminator) != -1
                     )
-                        and "%s%s%s" % (quotechar, str(_column), quotechar)
+                        and "%s%s%s" % (quotechar, self._csv_escape_string(str(_column)), quotechar)
                         or _column
                 )
                 for _column in row
@@ -430,7 +430,7 @@ if __name__ == "__main__":
     table.add_row(
         "My first value",
         "\n".join([
-            "First very very long line that needs to be wrapped properly in the table rendering to avoid overflow issues in the console output.",
+            "First very very long line that needs to be wrapped \"properly in the table rendering to avoid overflow issues in the console output.",
             "",
             "More options:",
             "- test quite long first option that does not need wrapping",
