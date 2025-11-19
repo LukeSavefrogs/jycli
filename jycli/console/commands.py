@@ -127,10 +127,17 @@ def get_terminal_size():
             pass
 
     if not cr:
-        cr = tuple([
-            execute_command(["bash", "-c", "tput %s 2> /dev/tty" % _cmd]).strip()
-            for _cmd in ["lines", "cols"]
-        ])
+        try:
+            cr = tuple([
+                int(execute_command(["bash", "-c", "tput %s 2> /dev/tty" % _cmd]).strip())
+                for _cmd in ["lines", "cols"]
+            ])
+        except ValueError:
+            # Fail if the command does not return an int
+            #
+            # For example:
+            #   ValueError: invalid literal for __int__: bash: line 1: /dev/tty: No such device or address
+            pass
 
     # If all else fails, assume a default terminal size
     if not cr or None in cr or "" in cr:
